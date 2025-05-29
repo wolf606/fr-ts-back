@@ -1,0 +1,34 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - '27017:27017'
+    volumes:
+      - themongo:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: bowie
+      MONGO_INITDB_ROOT_PASSWORD: vienna
+  
+  app:
+    build: .
+    container_name: node-app
+    environment:
+      - MONGODB_URI=mongodb://bowie:vienna@localhost:27017
+      - JWT_SECRET=68xpTyyOCn+j9DfMBra13sD69iOjRiYzvt4UCosbgZY=
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+    restart: always
+
+volumes:
+  themongo:
+    external: true
+
+networks:
+  app-network:
+    driver: bridge
